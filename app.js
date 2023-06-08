@@ -101,7 +101,7 @@ app.post("/",(req, res)=> {
   const state = req.body.state
   const url = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName},${state},US&limit=&appid=b1b8cda403b30d53ea809fd1a4168f55`
 
-  https.get(Url, function (response) {
+  https.get(url, function (response) {
     response.on("data",(data)=> {
       const countryData = JSON.parse(data)[0]
       const lat = countryData.lat
@@ -121,7 +121,7 @@ app.post("/",(req, res)=> {
             console.log(jsonData);
             es.write(`<h1>The temperature in ${cityName} is ${temp}F </h1>`);
             res.write(`<p>The weather is considered ${des}</p>`)
-            res.write('<img src = ' + imageURL + '>')
+            res.write('<img src = ' + imageurl + '>')
         })
     })
     })
