@@ -84,54 +84,49 @@
 // });
 
 // app.listen(9000);
-
+'use strict';
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const http = require("http");
+const https = require("https");
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", function (req, res) {
+app.get("/", (req, res) =>{
   res.sendFile(__dirname + "/page.html");
 });
 
-app.post("/", function (req, res) {
+app.post("/",(req, res)=> {
   const cityName = req.body.cityName;
-  const apiKey = '24c0068098724bf298b44257081adfe0';
-  const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${cityName}&key=${apiKey}`;
+  const state = req.body.state
+  const url = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName},${state},US&limit=&appid=b1b8cda403b30d53ea809fd1a4168f55`
 
-  http.get(geocodeUrl, function (response) {
-    response.on("data", function (data) {
-      const geocodeData = JSON.parse(data);
-      const lat = geocodeData.results[0].geometry.lat;
-      const lng = geocodeData.results[0].geometry.lng;
+  https.get(Url, function (response) {
+    response.on("data",(data)=> {
+      const countryData = JSON.parse(data)[0]
+      const lat = countryData.lat
+      const lon = countryData.lon
 
-      const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=2ddae03d97a6eb6309cf2bd5d2ca661c&units=imperial`;
+      const Url2 = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=2ddae03d97a6eb6309cf2bd5d2ca661c&units=imperial`; // Now we're creating a varibale for our url, which will hold our API key;
 
-      http.get(weatherUrl, function (weatherResponse) {
-        let weatherData = "";
-        weatherResponse.on("data", function (chunk) {
-          weatherData += chunk;
-        });
+      https.get(Url2, (Response)=> {
+        response.on('data',(data)=>{
 
-        weatherResponse.on("end", function () {
-          const jsondata = JSON.parse(weatherData);
-          const temp = jsondata.main.temp;
-          const des = jsondata.weather[0].description;
-          const icon = jsondata.weather[0].icon;
+        const jsonData = JSON.parse(data);
+        const temp = jsonData.main.temp
+        const des = jsonData.weather[0].description;
+          const icon = jsonData.weather[0].icon;
           const imageurl =
             "http://openweathermap.org/img/wn/" + icon + "@2x.png";
-          res.write(`<h1>The temp in ${cityName} is ${temp} degrees</h1>`);
-          res.write(`<p>The weather description is ${des} </p>`);
-          res.write("<img src=" + imageurl + ">");
-          res.send();
-        });
-      });
-    });
-  });
-});
-
+            console.log(jsonData);
+            es.write(`<h1>The temperature in ${cityName} is ${temp}F </h1>`);
+            res.write(`<p>The weather is considered ${des}</p>`)
+            res.write('<img src = ' + imageURL + '>')
+        })
+    })
+    })
+})
+})
 app.listen(9000, function () {
   console.log("Server is running on port 9000");
 });
