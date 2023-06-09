@@ -1,132 +1,51 @@
-//WEATHER APP
-//THESE ARE THE PACKAGES WE WILL USE FOR THIS APP!!
-// const express = require("express");
-// const app = express();//commonly used like this for a post or git 
-// const bodyParser = require("body-parser");
-// const https = require("https");
 
-// //CREATED OUR ROUTE FOR URL TO PAGE.HTML
-// app.use(bodyParser.urlencoded({extended:true}));//method for body parser grab our url code to return our request for content type to be true//body-parser:we taking the body of the data within the url
-// app.get("/",function(req,res){//grab page.html file and putting into req and res
-
-//     res.sendFile(__dirname + "/page.html");
-// });
-
-// // HERE WE WILL IMPLEMENT OUR API CALL TO OUR URL
-
-// app.post('/', function(req,res){
-// const cityName = req.body.cityName;
-// const url = `https://api.openweathermap.org/data/2.5/weather?lat=35.22709&lon=-80.84313&appid=2ddae03d97a6eb6309cf2bd5d2ca661c&units=imperial`;
-// https.get(url,function(response){
-// response.on("data",function(data){
-
-//     const jsondata = JSON.parse(data);
-//     console.log(jsondata);//put it into a json format
-//     const temp = jsondata.main.temp;
-//     const des = jsondata.weather[0].description;
-// const icon = jsondata.weather[0].icon;
-// const imageurl = "http://openweathermap.org/img/wn/" + icon + "@2x.png";
-// res.write(`<h1>The temperature in ${cityName} is ${temp} degrees</h1>`);
-// res.write(`<p>The weather description is ${des}</p>`);
-// res.write("<img src = " + imageurl + ">" );
-// });
-
-// });
-// });
-
-// app.listen(9000);
-
-
-//THESE ARE THE PACKAGES WE WILL USE FOR THIS APP!!
-// const express = require("express");
-// const app = express();
-// const bodyParser = require("body-parser");
-// const http = require("http");
-// const port = 9000;
-
-// //  //CREATED OUR ROUTE FOR URL TO PAGE.HTML
-// app.use(bodyParser.urlencoded({ extended: true }));
-
-// app.get("/", function (req, res) {
-//   res.sendFile(__dirname + "/page.html");
-// });
-
-// // // HERE WE WILL IMPLEMENT OUR API CALL TO OUR URL
-// app.post("/", function (req, res) {
-//   const cityName = req.body.cityName;
-//   const apiKey = '24c0068098724bf298b44257081adfe0'; // Replace with your OpenCage Data API key
-// const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${cityName}&key=${apiKey}`;//variable is the URL for the OpenCage Data API request. It uses the geocode/v1/json endpoint to retrieve geolocation data based on a provided query string (q=${cityName}) representing the city name or zip code, and includes the API key as a parameter (key=${apiKey}).
-
-//   https.get(geocodeUrl, function (response) {//o send an HTTP GET request to the geocodeUrl to retrieve the geolocation data.
-//     response.on("data", function (data) {//The response from the API request is received as a stream of data. The response.on('data', function (data) {...}) event listener is triggered whenever data is received.
-//       const geocodeData = JSON.parse(data);//Inside the event listener, the received data is parsed as JSON using JSON.parse(data), and the resulting object is assigned to the geocodeData variable.
-//       const lat = geocodeData.results[0].geometry.lat;
-//       const lng = geocodeData.results[0].geometry.lng;//From the geocodeData object, the latitude (lat) and longitude (lng) values are extracted from the results[0].geometry property. These represent the coordinates of the provided city or zip code.
-
-//       const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=2ddae03d97a6eb6309cf2bd5d2ca661c&units=imperial`; //new weatherUrl is constructed for the OpenWeatherMap API request. The URL includes the latitude and longitude in the query parameters, along with the API key and other parameters for units and data format.
-
-//       http.get(weatherUrl, function (weatherResponse) {//you can fetch the weather data by using the weatherUrl with the appropriate HTTP request method, such as https.get() 
-//         weatherResponse.on("data", function (weatherData) {
-//           const jsondata = JSON.parse(weatherData);
-//           const temp = jsondata.main.temp;
-//           const des = jsondata.weather[0].description;
-//           const icon = jsondata.weather[0].icon;
-//           const imageurl =
-//             "http://openweathermap.org/img/wn/" + icon + "@2x.png";
-//           res.write(`<h1>The temp in ${cityName} is ${temp} degrees</h1>`);
-//           res.write(`<p>The weather description is ${des} </p>`);
-//           res.write("<img src=" + imageurl + ">");
-//           res.send();
-//         });
-//       });
-//     });
-//   });
-// });
-
-// app.listen(9000);
 'use strict';
-const express = require("express");
-const app = express();
-const bodyParser = require("body-parser");
-const https = require("https");
-
-app.use(bodyParser.urlencoded({ extended: true }));
-
-app.get("/", (req, res) =>{
-  res.sendFile(__dirname + "/page.html");
-});
-
-app.post("/",(req, res)=> {
-  const cityName = req.body.cityName;
+// Weather App
+// First Step - Install our packages
+// Second Step - Store the packages as variables
+const express = require('express');
+const app = express(); //  using express(), and it is assigned to the app variable. This allows you to use the app variable to define routes and start the server
+const bodyParser = require('body-parser');//middleware is configured to parse the request body. It is added to the middleware stack using app.use()
+const https = require('https');
+// The root route ("/") is defined using app.get(). When a GET request is made to the root route, the server responds by sending the page.html file
+app.use(bodyParser.urlencoded({extended: true})) // Pulling the API to the page.html
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/page.html');
+})
+//The root route ("/") is also set up to handle POST requests. 
+//When a POST request is made to the root route (which happens when the form in page.html is submitted), the code inside the callback function is executed.
+app.post('/', (req, res) => {//Inside the POST route callback, two API calls are made
+  const cityName = req.body.cityName; // This is where we request the information from our bodyParser
   const state = req.body.state
-  const url = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName},${state},US&limit=&appid=b1b8cda403b30d53ea809fd1a4168f55`
-
-  https.get(url, function (response) {
-    response.on("data",(data)=> {
+  //The first API call is to the OpenWeatherMap Geo API  to retrieve the latitude and longitude of the provided city and state.
+  const url = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName},${state},US&limit=&appid=2ddae03d97a6eb6309cf2bd5d2ca661c`
+  https.get(url,function(response){
+      response.on("data",(data)=>{
       const countryData = JSON.parse(data)[0]
       const lat = countryData.lat
       const lon = countryData.lon
-
-      const Url2 = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=2ddae03d97a6eb6309cf2bd5d2ca661c&units=imperial`; // Now we're creating a varibale for our url, which will hold our API key;
-
-      https.get(Url2, (Response)=> {
-        response.on('data',(data)=>{
-
-        const jsonData = JSON.parse(data);
-        const temp = jsonData.main.temp
-        const des = jsonData.weather[0].description;
-          const icon = jsonData.weather[0].icon;
-          const imageurl =
-            "http://openweathermap.org/img/wn/" + icon + "@2x.png";
-            console.log(jsonData);
-            es.write(`<h1>The temperature in ${cityName} is ${temp}F </h1>`);
-            res.write(`<p>The weather is considered ${des}</p>`)
-            res.write('<img src = ' + imageurl + '>')
-        })
-    })
-    })
+      //The second API call is made to the OpenWeatherMap Weather API  using the obtained latitude and longitude to get the weather information.
+      const url2 = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=2ddae03d97a6eb6309cf2bd5d2ca661c&units=imperial`; // creating a varibale for our url, which will hold our API key
+//The response from the Weather API is received in chunks
+      https.get(url2, (response) => {
+          response.on('data', (data) => {
+            //The data is parsed as JSON and used to extract the temperature, weather description, and weather icon
+              const jsonData = JSON.parse(data);
+              const temp = jsonData.main.temp;
+              const des = jsonData.weather[0].description;
+              const icon = jsonData.weather[0].icon;
+              const imageURL = 'http://openweathermap.org/img/wn/' + icon + '@2x.png';
+              console.log(jsonData);
+              //The server then sends an HTML response to the client (res.write()) displaying the temperature, weather description, and weather icon
+              res.write(`<h1>The temperature in ${cityName} is ${temp}F </h1>`);
+              res.write(`<p>The weather is considered ${des}</p>`)
+              res.write('<img src = ' + imageURL + '>')
+          })
+      })
+      })
+  })
 })
+//The server is started by calling app.listen()  
+app.listen(9000, () =>{//specifying the port number to listen on
+  console.log(`calling port 9000!`)//A console log message is printed to indicate that the server has started successfully.
 })
-app.listen(9000, function () {
-  console.log("Server is running on port 9000");
-});
